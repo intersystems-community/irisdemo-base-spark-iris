@@ -1,7 +1,7 @@
 # Multi-build Dockerfile. This image will not be included into our final image. 
 # We just need a reference to it. I will use that to extract IRIS jar files from it.
 # Think of it as a parallel universe we just entered and it is called now "universe 0".
-FROM store/intersystems/iris-community:2019.3.0.309.0
+FROM intersystemsdc/irisdemo-base-irisdb-community:iris-community.2019.3.0.309.0
 
 # Based on Getty Images "https://github.com/gettyimages"
 # Here is our real image. This is the universe we are going to stay on. 
