@@ -1,12 +1,12 @@
 # Multi-build Dockerfile. This image will not be included into our final image. 
 # We just need a reference to it. I will use that to extract IRIS jar files from it.
 # Think of it as a parallel universe we just entered and it is called now "universe 0".
-FROM intersystemsdc/irisdemo-base-irisdb-community:iris-community.2019.3.0.309.0
+FROM intersystemsdc/iris-community:2020.3.0.200.0-zpm
 
 # Based on Getty Images "https://github.com/gettyimages"
 # Here is our real image. This is the universe we are going to stay on. 
 #FROM debian:stretch
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 LABEL maintainer="Amir Samary <amir.samary@intersystems.com>"
 
 # Now we can extract those jar files from universe 0, and bring them into our universe... ;)
@@ -30,11 +30,10 @@ EXPOSE 7001-7005 7077 6066
 # ENV LC_ALL en_US.UTF-8
 
 RUN apt-get update \
- && apt-get install -y curl unzip \
+ && apt-get install -y tini curl unzip \
     python3 python3-setuptools \
     apt-transport-https \
  && ln -s /usr/bin/python3 /usr/bin/python \
- && easy_install3 pip py4j \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
@@ -64,17 +63,7 @@ RUN apt-get -y update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# HADOOP
-ENV HADOOP_VERSION 2.7.7
-ENV HADOOP_HOME /usr/hadoop-$HADOOP_VERSION
-ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-ENV PATH $PATH:$HADOOP_HOME/bin
-RUN curl -sL --retry 3 \
-  "http://archive.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz" \
-  | gunzip \
-  | tar -x -C /usr/ \
- && rm -rf $HADOOP_HOME/share/doc \
- && chown -R root:root $HADOOP_HOME
+ENV HADOOP_VERSION 2.7
 
 # SPARK Version 2.1.3
 # This is the same version that the zeppelin image uses and that InterSystems currently supports
@@ -91,49 +80,28 @@ RUN curl -sL --retry 3 \
 #  && mv /usr/$SPARK_PACKAGE $SPARK_HOME \
 #  && chown -R root:root $SPARK_HOME
 
-# SPARK Version 2.1.1
+# SPARK Version 2.4.4
 # This is the same version that the zeppelin image uses and that InterSystems currently supports
-ENV SPARK_VERSION 2.1.1
-ENV SPARK_PACKAGE spark-${SPARK_VERSION}-bin-without-hadoop
+ENV SPARK_VERSION 2.4.4
+ENV SPARK_PACKAGE spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}
 ENV SPARK_HOME /usr/spark-${SPARK_VERSION}
-ENV SPARK_DIST_CLASSPATH="$HADOOP_HOME/etc/hadoop/*:$HADOOP_HOME/share/hadoop/common/lib/*:$HADOOP_HOME/share/hadoop/common/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/hdfs/lib/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/yarn/lib/*:$HADOOP_HOME/share/hadoop/yarn/*:$HADOOP_HOME/share/hadoop/mapreduce/lib/*:$HADOOP_HOME/share/hadoop/mapreduce/*:$HADOOP_HOME/share/hadoop/tools/lib/*"
 ENV PATH $PATH:${SPARK_HOME}/bin
 ENV SPARK_OPTS --driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info
-RUN curl -sL --retry 3 \
+RUN echo "https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/${SPARK_PACKAGE}.tgz" && \
+  curl -sL --retry 3 \
   "https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/${SPARK_PACKAGE}.tgz" \
-  | gunzip \
-  | tar x -C /usr/ \
+  | tar -xz -C /usr/ \
  && mv /usr/$SPARK_PACKAGE $SPARK_HOME \
- && chown -R root:root $SPARK_HOME
+ && chown -R root:root $SPARK_HOME \
+ && chown -R root:root /custom/lib/ \
+ && chmod +x $SPARK_HOME/bin/load-spark-env.sh
 
-#R version 3.4.4 (2018-03-15) -- "Someone to Lean On"
-# That is the same version that the Zeppelin 0.8.0 image uses
-RUN echo "$LOG_TAG Install R related packages" && \
-    echo "deb http://cloud.r-project.org/bin/linux/ubuntu xenial/" | tee -a /etc/apt/sources.list && \
-    echo "deb http://archive.ubuntu.com/ubuntu xenial-backports main restricted universe" | tee -a /etc/apt/sources.list && \
-    echo "deb-src http://security.ubuntu.com/ubuntu trusty-security restricted main universe multiverse" | tee -a /etc/apt/sources.list && \
-    gpg --keyserver keyserver.ubuntu.com --recv-key 51716619E084DAB9 && \
-    gpg -a --export 51716619E084DAB9 | apt-key add - && \
-    apt-get -y update && \
-    apt-get -y upgrade && \
-    apt-get -y install software-properties-common && \
-    apt-get -y build-dep libcurl4-gnutls-dev && \
-    apt-get -y build-dep libxml2-dev && \
-    apt-get -y install libcurl4-gnutls-dev libssl-dev libxml2-dev && \
-    apt-get -y install libxml2 r-cran-xml r-base-core r-recommended r-cran-kernsmooth r-cran-nnet r-base r-base-dev && \
-    R -e "install.packages('knitr', repos='http://cloud.r-project.org')" && \
-    R -e "install.packages('ggplot2', repos='http://cloud.r-project.org')" && \
-    R -e "install.packages('googleVis', repos='http://cloud.r-project.org')" && \
-    R -e "install.packages('data.table', repos='http://cloud.r-project.org')" && \
-    # for devtools, Rcpp
-    apt-get -y install libssl-dev && \
-    Rscript -e 'install.packages("devtools", repos="https://cloud.r-project.org")' && \
-    R -e "install.packages('Rcpp', repos='http://cloud.r-project.org')" && \
-    Rscript -e "library('devtools'); library('Rcpp'); install_github('ramnathv/rCharts')"
+COPY --from=0 /usr/irissys/dev/java/lib/JDK18/*.jar /usr/spark-2.4.4/jars/
 
 # JPMML
 RUN cd /custom/lib && \
-    curl -sLO --retry 3 https://github.com/jpmml/jpmml-sparkml/releases/download/1.2.12/jpmml-sparkml-executable-1.2.12.jar
+    curl -sLO --retry 3 https://github.com/jpmml/jpmml-sparkml/releases/download/1.5.9/jpmml-sparkml-executable-1.5.9.jar && \
+    cd $SPARK_HOME
 
 # This file has many strings to be replaced:
 # - SPARK_MASTER_HOST       : This is used by spark CLI such as pyspark to determine where spark master is.
@@ -149,11 +117,12 @@ ADD ./conf/master/spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf.maste
 ADD ./conf/worker/spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf.worker
 
 ADD ./conf/startservices.sh /custom/sbin/
-RUN chmod +x /custom/sbin/startservices.sh
+RUN chmod +x /custom/sbin/startservices.sh && \
+    chmod +x /custom/lib/*
 
-RUN rm $SPARK_HOME/jars/pmml-model-1.2.15.jar && \
-    rm $SPARK_HOME/jars/pmml-schema-1.2.15.jar
-    
 WORKDIR $SPARK_HOME
-CMD [ "/custom/sbin/startservices.sh", "Master"]
 
+ENTRYPOINT [ "/usr/bin/tini", "-s", "--", "/bin/bash", "-c", "/custom/sbin/startservices.sh", "Master" ]
+#ENTRYPOINT [ "/usr/bin/tini", "-s", "--", "sleep", "100000" ]
+
+#CMD [ "sh", "-c", "source", "/custom/sbin/startservices.sh", "Master"]

@@ -30,13 +30,13 @@ else
     fi
 fi
 
-for variable in MASTER SPARK_MASTER_PORT IRIS_MASTER_HOST IRIS_MASTER_PORT IRIS_MASTER_NAMESPACE IRIS_MASTER_USERNAME IRIS_MASTER_PASSWORD;
+for variable in SPARK_MASTER_PORT IRIS_MASTER_HOST IRIS_MASTER_PORT IRIS_MASTER_NAMESPACE IRIS_MASTER_USERNAME IRIS_MASTER_PASSWORD MASTER;
 do
     value=$(eval echo "\$$variable")
     if [ ! -z "$value" ]
     then
         printf "\n\nConfiguring $SPARK_HOME/conf/spark-defaults.conf with $variable=$value..."
-        sed -i.bak "s/$variable/$value/g" $SPARK_HOME/conf/spark-defaults.conf
+        sed -i.bak "s|$variable|$value|g" $SPARK_HOME/conf/spark-defaults.conf
     fi
 done
 
@@ -44,7 +44,7 @@ printf "\n\n"
 
 if [ "$SPARK_NODE_TYPE" == "Worker" ]
 then
-    $SPARK_HOME/bin/spark-class org.apache.spark.deploy.worker.Worker $MASTER
+    . $SPARK_HOME/bin/spark-class org.apache.spark.deploy.worker.Worker $MASTER
 else
-    $SPARK_HOME/bin/spark-class org.apache.spark.deploy.master.Master -h sparkmaster
+    . $SPARK_HOME/bin/spark-class org.apache.spark.deploy.master.Master -h sparkmaster
 fi
