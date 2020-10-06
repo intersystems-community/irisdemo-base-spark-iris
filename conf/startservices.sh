@@ -44,13 +44,7 @@ printf "\n\n"
 
 if [ "$SPARK_NODE_TYPE" == "Worker" ]
 then
-<<<<<<< HEAD
     $SPARK_HOME/sbin/start-slave.sh $MASTER
 else
     $SPARK_HOME/sbin/start-master.sh -h sparkmaster
-=======
-    . $SPARK_HOME/bin/spark-class org.apache.spark.deploy.worker.Worker $MASTER
-else
-    . $SPARK_HOME/bin/spark-class org.apache.spark.deploy.master.Master -h sparkmaster
->>>>>>> 30ef498d60fb04bef1aed967ee22711b6b3e9a3c
 fi
