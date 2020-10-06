@@ -2,42 +2,42 @@ version: '2.4'
 
 services:
 
-  # You may want to replace this image for an IRIS image with your own data model
-  myIRISDB:
-    image: store/intersystems/iris-community:2019.3.0.309.0
-    hostname: myIRISDB
-    init: true
-    ports:
-    - "51773:51773" # 51773 is the superserver default port
-    - "52773:52773" # 52773 is the webserver/management portal port
-    volumes:
-    - type: bind
-      source: ./common_shared/      # - common_shared:/common_shared   # Shared between all spark nodes. Good place to place a file we are working with.
-      target: /common_shared
+#  # You may want to replace this image for an IRIS image with your own data model
+#  myIRISDB:
+#    image: store/intersystems/iris-community:2019.3.0.309.0
+#    hostname: myIRISDB
+#    init: true
+#    ports:
+#    - "51773:51773" # 51773 is the superserver default port
+#    - "52773:52773" # 52773 is the webserver/management portal port
+#    volumes:
+#    - type: bind
+#      source: ./common_shared/      # - common_shared:/common_shared   # Shared between all spark nodes. Good place to place a file we are working with.
+#      target: /common_shared
 
-  zeppelin:
-    depends_on: 
-      myIRISDB:
-        condition: service_healthy
-    image: intersystemsdc/irisdemo-base-zeppelin:latest
-    init: true
-    ports:
-    - "9090:9090"     # Zeppelin
-    - "4040:4040"     # Zeppelin Spark UI
-    volumes:
-    - type: bind
-      source: ./zeppelin_config/
-      target: /shared
-    - type: bind
-      source: ./common_shared/      # - common_shared:/common_shared   # Shared between all spark nodes. Good place to place a file we are working with.
-      target: /common_shared
-
-    environment:
-    - IRIS_MASTER_HOST=RRLACESrv # DNS based on the name of the service!
-    - IRIS_MASTER_PORT=51773 
-    - IRIS_MASTER_USERNAME=SuperUser 
-    - IRIS_MASTER_PASSWORD=sys          # Make sure to change your password on myIRISDB to "sys"
-    - IRIS_MASTER_NAMESPACE=USER
+#  zeppelin:
+#    depends_on: 
+#      myIRISDB:
+#        condition: service_healthy
+#    image: intersystemsdc/irisdemo-base-zeppelin:latest
+#    init: true
+#    ports:
+#    - "9090:9090"     # Zeppelin
+#    - "4040:4040"     # Zeppelin Spark UI
+#    volumes:
+#    - type: bind
+#      source: ./zeppelin_config/
+#      target: /shared
+#    - type: bind
+#      source: ./common_shared/      # - common_shared:/common_shared   # Shared between all spark nodes. Good place to place a file we are working with.
+#      target: /common_shared
+#
+#    environment:
+#    - IRIS_MASTER_HOST=RRLACESrv # DNS based on the name of the service!
+#    - IRIS_MASTER_PORT=51773 
+#    - IRIS_MASTER_USERNAME=SuperUser 
+#    - IRIS_MASTER_PASSWORD=sys          # Make sure to change your password on myIRISDB to "sys"
+#    - IRIS_MASTER_NAMESPACE=USER
 
   # The spark cluster is not required for Zeppelin to work. You can comment the sparkmaster, worker1 and worker2 out of this file 
   # if you want. 
