@@ -12,11 +12,6 @@ This repo contains an example of a docker-compose.yml file that you can copy and
 docker-compose up
 ```
 
-After you start this composition, you will find IRIS, Zeppelin and the Spark portals on the following URLs:
-* IRIS: http://localhost:52773/csp/sys/UtilHome.csp
-  - The first time you try to log in, use the user SuperUser with the "SYS" password. 
-    You will be asked to enter with a new password. Enter with "sys" (unless you want to change your docker-compose.yml to use another password)
-* Zeppelin: http://localhost:9090/
-  - It is already configured to talk to IRIS using JDBC and the Spark Connector
-* Spark Cluster: http://localhost:8080
-  - It is already configured to talk to IRIS using JDBC and the Spark Connector
+After you start this composition, you will find the Spark Cluster at http://localhost:8080.
+
+Please, refer to the [Readmission Demo](https://github.com/intersystems-community/irisdemo-demo-readmission) for an example of using this image.
