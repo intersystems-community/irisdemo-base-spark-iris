@@ -1,7 +1,8 @@
 # Multi-build Dockerfile. This image will not be included into our final image. 
 # We just need a reference to it. I will use that to extract IRIS jar files from it.
 # Think of it as a parallel universe we just entered and it is called now "universe 0".
-FROM intersystemsdc/iris-community:2020.3.0.200.0-zpm
+FROM intersystemsdc/irisdemo-base-irishealthint-community:irishealth-ml-community.2020.3.0.302.0
+#FROM intersystemsdc/iris-community:2020.3.0.200.0-zpm
 
 # Based on Getty Images "https://github.com/gettyimages"
 # Here is our real image. This is the universe we are going to stay on. 
@@ -33,6 +34,7 @@ RUN cd /custom/lib && \
 ADD ./conf/master/spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf.master
 ADD ./conf/worker/spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf.worker
 
+ADD ./conf/log4j.properties $SPARK_HOME/conf/
 ADD ./conf/startservices.sh /custom/sbin/
 RUN chmod +x /custom/sbin/startservices.sh && \
     chmod +x /custom/lib/*
