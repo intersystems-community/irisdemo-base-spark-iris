@@ -34,7 +34,6 @@ RUN cd /custom/lib && \
 ADD ./conf/master/spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf.master
 ADD ./conf/worker/spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf.worker
 
-ADD ./conf/log4j.properties $SPARK_HOME/conf/
 ADD ./conf/startservices.sh /custom/sbin/
 RUN chmod +x /custom/sbin/startservices.sh && \
     chmod +x /custom/lib/*
