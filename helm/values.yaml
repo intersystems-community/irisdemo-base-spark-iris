@@ -3,10 +3,7 @@
 # cloudProviderRegion: "dev"
 skaffold: false
 
-skaffoldDatalakeImage: ""
-skaffoldBankingCoreImage: ""
-skaffoldBankingTrnSrvImage: ""
-skaffoldPosImage: ""
+skaffoldSparkmasterImage: ""
 
 image:
   registry: containers.intersystems.com/iscinternal/sds
