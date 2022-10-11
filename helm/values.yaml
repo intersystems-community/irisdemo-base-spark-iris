@@ -7,7 +7,7 @@ skaffoldSparkmasterImage: ""
 
 image:
   registry: containers.intersystems.com/iscinternal/sds
-  repository: agastya-spark-demo
+  repository: irisdemo-base-spark-iris
   
 # These are the secret fields needed to successfully deploy.
 # They will be injected by the control plane:
