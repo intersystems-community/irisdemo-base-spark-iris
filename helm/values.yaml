@@ -1,0 +1,110 @@
+# Used to specify where the deployment is being done
+# cloudProvider: "dev"
+# cloudProviderRegion: "dev"
+skaffold: false
+
+skaffoldDatalakeImage: ""
+skaffoldBankingCoreImage: ""
+skaffoldBankingTrnSrvImage: ""
+skaffoldPosImage: ""
+
+image:
+  registry: containers.intersystems.com/iscinternal/sds
+  repository: agastya-spark-demo
+  
+# These are the secret fields needed to successfully deploy.
+# They will be injected by the control plane:
+requiredSecrets:
+  irisLicense: ""
+  intersystemsContainerRegistrySecret: ""
+
+datalake:
+  webPort: 10000
+  superPort: 10001
+  compute:
+      nodeTypeSelector: ""
+      cpu: 2
+      memory: 2Gi
+
+bankingCore:
+  webPort: 10002
+  superPort: 10003
+  compute:
+      nodeTypeSelector: ""
+      cpu: 2
+      memory: 2Gi
+
+bankingTrnSrv:
+  webPort: 10004
+  superPort: 10005
+  compute:
+      nodeTypeSelector: ""
+      cpu: 2
+      memory: 2Gi
+    
+pos:
+  webPort: 10006
+  superPort: 10007
+  compute:
+      nodeTypeSelector: ""
+      cpu: 2
+      memory: 2Gi
+
+sparkmaster:
+  fortyPort: 4040
+  sixtyPort: 6066
+  seventyPort: 7077
+  eightyPort: 8080
+  environment:
+      sparkNodeType: "Master"
+      sparkPublicDns: "localhost"
+      irisMasterHost: "datalake" # DNS based on the name of the service!
+      irisMasterUsername: "SuperUser"
+      irisMasterPassword: "sys"
+      irisMasterNamespace: "APP"
+  compute:
+      nodeTypeSelector: ""
+      cpu: 2
+      memory: 2Gi
+
+workers:
+  webPort1: 10010
+  workerPort1: "10011"
+  webPort2: 10012
+  workerPort2: "10013"
+  environment:
+      sparkNodeType: "Worker"
+      sparkWorkerCores: "1"
+      sparkWorkerMemory: 1g
+      sparkPublicDNS: localhost
+  compute:
+      nodeTypeSelector: ""
+      cpu: 2
+      memory: 2Gi
+
+# storageDB: 
+#   size : 50Gi
+#   storageClass : ssd-storageclass-1
+# storageWIJ: 
+#   size: 25Gi
+#   storageClass : ssd-storageclass-1
+# storageJournal1: 
+#   size: 50Gi
+#   storageClass : ssd-storageclass-1
+# storageJournal2: 
+#   size: 3Gi
+#   storageClass : ssd-storageclass-1
+
+# mirrored: false
+
+# superServer:
+#   enabled: true
+#   hostname: "localhost"
+#   port: "10000"
+
+# management:
+#   enabled: true
+#   hostname: "localhost"
+#   port: "10001"
+
+

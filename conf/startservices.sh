@@ -14,6 +14,7 @@
 # - MASTER                  : Spark Master URL
 
 export MASTER="spark://sparkmaster:7077"
+export SPARK_LOCAL_IP="127.0.0.1"
 
 if [ "$SPARK_NODE_TYPE" == "Worker" ]
 then

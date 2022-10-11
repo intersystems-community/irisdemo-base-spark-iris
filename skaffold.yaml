@@ -1,0 +1,71 @@
+apiVersion: skaffold/v2beta27
+kind: Config
+
+# Standard build used by both "dev" and "run" profiles below
+build:
+  insecureRegistries: 
+    - local-registry
+
+  local:
+    tryImportMissing: false
+    push: true
+    useBuildkit: true
+    concurrency: 2
+  tagPolicy:
+    sha256: {}
+
+  artifacts:
+    - image: skaffold
+      context: .
+      docker:
+        dockerfile: Dockerfile
+      # sync:
+        # We must use a manual sync into the /tmp/src folder just to prevent skaffold from
+        # rebuilding the entire image and reapplying the entire helm chart because of that.
+        # IRIS is not really looking into this folder inside the image. VSCode is the tool we
+        # use to change files during development and, thanks to our plugin, VSCode does the 
+        # synchronization for us. The files in /tmp/src are completely ignored.
+        # manual: 
+        # - src: 'src/**'
+        #   dest: /tmp/src
+        # - src: 'copydir/**'
+        #   dest: /home/irisowner
+
+
+# Definitions of the "dev" and "run" profiles
+profiles:
+
+  # DEV Profile
+  # Used when developping. 
+  # We will just be using the standard build above without changes
+  - name: dev
+    activation:
+      - command: dev
+    # portForward:
+    #   - resourceType: service
+    #     resourceName: isc-iris-db
+    #     namespace: isc-iris-db
+    #     port: 52773
+    #     localPort: 20000
+    deploy:
+      # kubectl:
+      #   manifests:
+      #     - ./k8s/cp_backend_iris_key_secret.yaml
+      helm:
+        releases:
+          - name: agastya-spark-demo
+            chartPath: helm
+            namespace: agastya-spark-demo
+            artifactOverrides:
+              skaffoldSparkImage: skaffold
+              
+            setValues:
+              skaffold: true
+              # cloudProvider: "dev" 
+              # cloudProviderRegion: "dev-region"
+              # serviceInternalName: "isc-iris-db"
+              # requiredSecrets.irisLicense: "iris-key-secret"
+              # storageDB.storageClass: "local-path"
+              # storageWIJ.storageClass: "local-path"
+              # storageJournal1.storageClass: "local-path"
+              # storageJournal2.storageClass: "local-path"

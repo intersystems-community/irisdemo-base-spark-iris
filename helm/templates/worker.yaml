@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 2
+  selector: 
+    matchLabels: 
+      app: worker 
+  template: 
+    metadata: 
+      labels: 
+        app: worker
+    spec: 
+
+      imagePullSecrets:
+      {{- if .Values.requiredSecrets.intersystemsContainerRegistrySecret }}    
+      - name: {{ .Values.requiredSecrets.intersystemsContainerRegistrySecret }}
+      {{- end }}
+
+      containers:
+      - name: worker-container
+        image: intersystemsdc/irisdemo-base-spark-iris:version-1.1
+        env:
+        - name: IRIS_MASTER_HOST
+          value: {{ .Values.sparkmaster.environment.irisMasterHost }}
+        - name: IRIS_MASTER_USERNAME
+          value: {{ .Values.sparkmaster.environment.irisMasterUsername }}
+        - name: IRIS_MASTER_PASSWORD
+          value: {{ .Values.sparkmaster.environment.irisMasterPassword }}
+        - name: IRIS_MASTER_NAMESPACE
+          value: {{ .Values.sparkmaster.environment.irisMasterNamespace }}
+
+        - name: SPARK_NODE_TYPE
+          value: {{ .Values.workers.environment.sparkNodeType }}
+        - name: SPARK_WORKER_CORES
+          value: {{ .Values.workers.environment.sparkWorkerCores | quote}}
+        - name: SPARK_WORKER_MEMORY
+          value: {{ .Values.workers.environment.sparkWorkerMemory }}
+        - name: SPARK_PUBLIC_DNS
+          value: {{ .Values.workers.environment.sparkPublicDNS }}
+        # resources:
+        #   requests:
+        #     cpu: {{ .Values.bankingCore.compute.cpu }}
+        #     memory: {{ .Values.bankingCore.compute.memory }}
