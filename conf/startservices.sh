@@ -14,7 +14,7 @@
 # - MASTER                  : Spark Master URL
 
 export MASTER="spark://sparkmaster:7077"
-export SPARK_LOCAL_IP="127.0.0.1"
+export SPARK_LOCAL_IP=$(hostname --ip-address)
 
 if [ "$SPARK_NODE_TYPE" == "Worker" ]
 then
@@ -47,5 +47,5 @@ if [ "$SPARK_NODE_TYPE" == "Worker" ]
 then
     $SPARK_HOME/sbin/start-slave.sh $MASTER
 else
-    $SPARK_HOME/sbin/start-master.sh -h sparkmaster
+    $SPARK_HOME/sbin/start-master.sh
 fi

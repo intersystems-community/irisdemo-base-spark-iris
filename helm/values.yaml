@@ -3,7 +3,7 @@
 # cloudProviderRegion: "dev"
 skaffold: false
 
-skaffoldSparkmasterImage: ""
+skaffoldSparkImage: ""
 
 image:
   registry: containers.intersystems.com/iscinternal/sds
@@ -14,38 +14,6 @@ image:
 requiredSecrets:
   irisLicense: ""
   intersystemsContainerRegistrySecret: ""
-
-datalake:
-  webPort: 10000
-  superPort: 10001
-  compute:
-      nodeTypeSelector: ""
-      cpu: 2
-      memory: 2Gi
-
-bankingCore:
-  webPort: 10002
-  superPort: 10003
-  compute:
-      nodeTypeSelector: ""
-      cpu: 2
-      memory: 2Gi
-
-bankingTrnSrv:
-  webPort: 10004
-  superPort: 10005
-  compute:
-      nodeTypeSelector: ""
-      cpu: 2
-      memory: 2Gi
-    
-pos:
-  webPort: 10006
-  superPort: 10007
-  compute:
-      nodeTypeSelector: ""
-      cpu: 2
-      memory: 2Gi
 
 sparkmaster:
   fortyPort: 4040
@@ -78,30 +46,4 @@ workers:
       nodeTypeSelector: ""
       cpu: 2
       memory: 2Gi
-
-# storageDB: 
-#   size : 50Gi
-#   storageClass : ssd-storageclass-1
-# storageWIJ: 
-#   size: 25Gi
-#   storageClass : ssd-storageclass-1
-# storageJournal1: 
-#   size: 50Gi
-#   storageClass : ssd-storageclass-1
-# storageJournal2: 
-#   size: 3Gi
-#   storageClass : ssd-storageclass-1
-
-# mirrored: false
-
-# superServer:
-#   enabled: true
-#   hostname: "localhost"
-#   port: "10000"
-
-# management:
-#   enabled: true
-#   hostname: "localhost"
-#   port: "10001"
-
 

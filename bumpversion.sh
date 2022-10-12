@@ -63,7 +63,15 @@ if [ -f VERSION ]; then
     # belonging to this repository. References to other images such as Spark and Zeppelin 
     # will be let alone.
     #
-    #sed -E -i '' "s;(intersystemsdc/irisdemo-demo-fraudprevention:.+)-version-[0-9][0-9.]*;\1-version-$INPUT_STRING;g" ./docker-compose.yml
+    if [[ $OSTYPE =~ [darwin*] ]]; then
+        # Updating application versions inside of Chart.yaml
+        sed -E -i '' "s;(version: [0-9.]+);version: $INPUT_STRING;" ./helm/Chart.yaml
+        sed -E -i '' "s;(appVersion: *)\"[0-9][0-9.]*\";\1\"$INPUT_STRING\";g" ./helm/Chart.yaml
+    else
+        # Updating application versions inside of Chart.yaml
+        sed -E -i "s;(version: [0-9.]+);version: $INPUT_STRING;" ./helm/Chart.yaml
+        sed -E -i "s;(appVersion: *)\"[0-9][0-9.]*\";\1\"$INPUT_STRING\";g" ./helm/Chart.yaml
+    fi
 
     echo "## $INPUT_STRING ($NOW)" > tmpfile
     git log --pretty=format:"  - %s" "v$BASE_STRING"...HEAD >> tmpfile

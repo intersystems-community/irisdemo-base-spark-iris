@@ -21,9 +21,9 @@ spec:
       containers:
       - name: sparkmaster-container
         {{- if eq .Values.skaffold true }}
-        image: {{ .Values.skaffoldSparkmasterImage }}
+        image: {{ .Values.skaffoldSparkImage }}
         {{- else }}
-        image: {{ .Values.image.registry }}/{{ .Values.image.repository }}/sparkmaster:{{ .Chart.AppVersion }}
+        image: {{ .Values.image.registry }}/{{ .Values.image.repository }}/spark:{{ .Chart.AppVersion }}
         {{- end }}        
         env:
         - name: SPARK_NODE_TYPE

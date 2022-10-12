@@ -15,22 +15,13 @@ build:
     sha256: {}
 
   artifacts:
-    - image: skaffold
+    - image: spark
       context: .
       docker:
         dockerfile: Dockerfile
-      # sync:
-        # We must use a manual sync into the /tmp/src folder just to prevent skaffold from
-        # rebuilding the entire image and reapplying the entire helm chart because of that.
-        # IRIS is not really looking into this folder inside the image. VSCode is the tool we
-        # use to change files during development and, thanks to our plugin, VSCode does the 
-        # synchronization for us. The files in /tmp/src are completely ignored.
-        # manual: 
-        # - src: 'src/**'
-        #   dest: /tmp/src
-        # - src: 'copydir/**'
-        #   dest: /home/irisowner
-
+      sync:
+        infer:
+        - './conf/**'
 
 # Definitions of the "dev" and "run" profiles
 profiles:
@@ -53,11 +44,11 @@ profiles:
       #     - ./k8s/cp_backend_iris_key_secret.yaml
       helm:
         releases:
-          - name: agastya-spark-demo
+          - name: spark
             chartPath: helm
-            namespace: agastya-spark-demo
+            namespace: spark
             artifactOverrides:
-              skaffoldSparkImage: skaffold
+              skaffoldSparkImage: spark
               
             setValues:
               skaffold: true

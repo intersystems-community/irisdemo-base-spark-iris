@@ -13,20 +13,8 @@ then
     printf "\t- your hosts file is at C:\\Windows\\System32\\drivers\\etc\\hosts\n\n"
 
 else
-    printf "\n\nDELETING PVCs...\n\n"
-    # # IKO is not eliminating the PVC when the deployment is deleted
-    # # so we must do it ourselves if we want the new deployment to use the new code from the new image
-    # kubectl delete pvc iris-data-isc-iris-db-data-0 -n isc-iris-db
-    # kubectl delete pvc iris-journal1-isc-iris-db-data-0 -n isc-iris-db
-    # kubectl delete pvc iris-journal2-isc-iris-db-data-0 -n isc-iris-db
-    # kubectl delete pvc iris-wij-isc-iris-db-data-0 -n isc-iris-db
-
-    printf "\n\nSKAFFOLD BUILD...\n\n"
-    skaffold build --default-repo local-registry:5000
-    exit_if_error "A problem occurred while trying to build the images."
-
-    printf "\nCreating agastya-spark-demo namespace"
-	kubectl create namespace "agastya-spark-demo"
+    printf "\nCreating spark namespace"
+	kubectl create namespace "spark"
     
     # skaffold dev -p dev --port-forward=true --default-repo local-registry:5000 --cleanup=false --tail=false
     skaffold dev -p dev --default-repo local-registry:5000 --cleanup=false --tail=false
