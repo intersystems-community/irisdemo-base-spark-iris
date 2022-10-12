@@ -1,4 +1,4 @@
-## 1.2.1 (October 12, 2022)
+## 1.2.3 (October 12, 2022)
   - Fixing conf/startservices.sh to stop overriding the hostname when starting spark so it will work on Kubernetes. Also adding skaffold and a helm chart for testing.
   - Updating documentation
 
